@@ -20,6 +20,7 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [currency, setCurrency] = useState("usd");
   const [brlRate, setBrlRate] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchBrlRate = async () => {
@@ -94,12 +95,26 @@ function App() {
     return <div className="container"><h1>Error: {error}</h1></div>;
   }
 
+  const filteredCrypto = cryptoData.filter(
+    (crypto) =>
+      crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      crypto.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <main className="container">
       <h1>Cripto View</h1>
-      <div className="currency-toggle">
-        <button onClick={() => setCurrency("usd")} className={currency === 'usd' ? 'active' : ''}>USD</button>
-        <button onClick={() => setCurrency("brl")} className={currency === 'brl' ? 'active' : ''}>BRL</button>
+      <div className="controls">
+        <input
+          type="text"
+          placeholder="Pesquisar..."
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+        <div className="currency-toggle">
+          <button onClick={() => setCurrency("usd")} className={currency === 'usd' ? 'active' : ''}>USD</button>
+          <button onClick={() => setCurrency("brl")} className={currency === 'brl' ? 'active' : ''}>BRL</button>
+        </div>
       </div>
       <table>
         <thead>
@@ -115,7 +130,7 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {cryptoData.map((crypto, index) => (
+          {filteredCrypto.map((crypto, index) => (
             <tr key={crypto.id}>
               <td>{index + 1}</td>
               <td>

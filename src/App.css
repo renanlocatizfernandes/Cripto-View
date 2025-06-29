@@ -72,6 +72,19 @@ td img {
   font-weight: bold;
 }
 
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     color: #f6f6f6;
