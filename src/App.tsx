@@ -8,6 +8,7 @@ interface CryptoData {
   symbol: string;
   image: string;
   current_price: number;
+  market_cap_rank: number;
   price_change_percentage_1h_in_currency: number;
   price_change_percentage_24h_in_currency: number;
   price_change_percentage_7d_in_currency: number;
@@ -24,6 +25,8 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [selectedCrypto, setSelectedCrypto] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<keyof CryptoData>("market_cap_rank");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   useEffect(() => {
     const fetchBrlRate = async () => {
@@ -99,7 +102,29 @@ function App() {
     return <div className="container"><h1>Error: {error}</h1></div>;
   }
 
-  const filteredCrypto = cryptoData.filter(
+  const handleSort = (key: keyof CryptoData) => {
+    if (sortKey === key) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortKey(key);
+      setSortOrder("asc");
+    }
+  };
+
+  const sortedCrypto = [...cryptoData].sort((a, b) => {
+    const aValue = a[sortKey];
+    const bValue = b[sortKey];
+
+    if (aValue < bValue) {
+      return sortOrder === "asc" ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return sortOrder === "asc" ? 1 : -1;
+    }
+    return 0;
+  });
+
+  const filteredCrypto = sortedCrypto.filter(
     (crypto) =>
       crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       crypto.symbol.toLowerCase().includes(searchTerm.toLowerCase())
@@ -131,14 +156,14 @@ function App() {
       <table>
         <thead>
           <tr>
-            <th>#</th>
-            <th>Moeda</th>
-            <th>Preço ({currency.toUpperCase()})</th>
-            <th>1h</th>
-            <th>24h</th>
-            <th>7d</th>
-            <th>30d</th>
-            <th>1y</th>
+            <th onClick={() => handleSort("market_cap_rank")}>#</th>
+            <th onClick={() => handleSort("name")}>Moeda</th>
+            <th onClick={() => handleSort("current_price")}>Preço ({currency.toUpperCase()})</th>
+            <th onClick={() => handleSort("price_change_percentage_1h_in_currency")}>1h</th>
+            <th onClick={() => handleSort("price_change_percentage_24h_in_currency")}>24h</th>
+            <th onClick={() => handleSort("price_change_percentage_7d_in_currency")}>7d</th>
+            <th onClick={() => handleSort("price_change_percentage_30d_in_currency")}>30d</th>
+            <th onClick={() => handleSort("price_change_percentage_1y_in_currency")}>1y</th>
           </tr>
         </thead>
         <tbody>

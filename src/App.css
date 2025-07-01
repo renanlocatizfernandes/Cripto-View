@@ -44,6 +44,7 @@ td {
 
 th {
   font-weight: 600;
+  cursor: pointer;
 }
 
 tbody tr:hover {
