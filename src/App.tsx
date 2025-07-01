@@ -21,6 +21,7 @@ function App() {
   const [currency, setCurrency] = useState("usd");
   const [brlRate, setBrlRate] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchBrlRate = async () => {
@@ -47,9 +48,10 @@ function App() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await fetch(
-          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C30d%2C1y`
+          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=${page}&sparkline=false&price_change_percentage=1h%2C24h%2C7d%2C30d%2C1y`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch data from CoinGecko API");
@@ -68,7 +70,7 @@ function App() {
     };
 
     fetchData();
-  }, []);
+  }, [page]);
 
   const getPriceColor = (price: number) => {
     return price >= 0 ? "green" : "red";
@@ -132,7 +134,7 @@ function App() {
         <tbody>
           {filteredCrypto.map((crypto, index) => (
             <tr key={crypto.id}>
-              <td>{index + 1}</td>
+              <td>{(page - 1) * 20 + index + 1}</td>
               <td>
                 <img src={crypto.image} alt={crypto.name} width="20" />
                 {crypto.name} ({crypto.symbol.toUpperCase()})
@@ -157,6 +159,15 @@ function App() {
           ))}
         </tbody>
       </table>
+      <div className="pagination">
+        <button onClick={() => setPage(page > 1 ? page - 1 : 1)} disabled={page === 1}>
+          Anterior
+        </button>
+        <span>Página {page}</span>
+        <button onClick={() => setPage(page + 1)}>
+          Próxima
+        </button>
+      </div>
     </main>
   );
 }
