@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import CryptoDetail from "./components/CryptoDetail";
 import "./App.css";
 
 interface CryptoData {
@@ -22,6 +23,7 @@ function App() {
   const [brlRate, setBrlRate] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
+  const [selectedCrypto, setSelectedCrypto] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchBrlRate = async () => {
@@ -103,6 +105,14 @@ function App() {
       crypto.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const handleRowClick = (cryptoId: string) => {
+    setSelectedCrypto(cryptoId);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedCrypto(null);
+  };
+
   return (
     <main className="container">
       <h1>Cripto View</h1>
@@ -133,7 +143,7 @@ function App() {
         </thead>
         <tbody>
           {filteredCrypto.map((crypto, index) => (
-            <tr key={crypto.id}>
+            <tr key={crypto.id} onClick={() => handleRowClick(crypto.id)} style={{ cursor: 'pointer' }}>
               <td>{(page - 1) * 20 + index + 1}</td>
               <td>
                 <img src={crypto.image} alt={crypto.name} width="20" />
@@ -168,6 +178,9 @@ function App() {
           Próxima
         </button>
       </div>
+      {selectedCrypto && (
+        <CryptoDetail cryptoId={selectedCrypto} onClose={handleCloseModal} />
+      )}
     </main>
   );
 }
